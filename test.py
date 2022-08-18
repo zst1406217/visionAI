@@ -1,10 +1,35 @@
-import cv2
-cap = cv2.VideoCapture(0)
-index=0
-for i in range(index,index+10):
-    cap.set(cv2.CAP_PROP_BRIGHTNESS, 50)
-    cap.set(cv2.CAP_PROP_CONTRAST, 20)
-    cap.set(cv2.CAP_PROP_EXPOSURE, -20)
-    (ret, frame) = cap.read()
-    cv2.imwrite('./jpeg/shujuji'+str(i+1).zfill(4)+'.jpg',frame)
-    cv2.waitKey(10)
+import os
+import random
+
+trainval_percent = 0.1
+train_percent = 0.9
+xmlfilepath = 'Annotations'
+txtsavepath = 'ImageSets\Main'
+total_xml = os.listdir(xmlfilepath)
+num = len(total_xml)
+list = range(num)
+tv = int(num * trainval_percent)
+tr = int(tv * train_percent)
+trainval = random.sample(list, tv)
+train = random.sample(trainval, tr)
+
+ftrainval = open('ImageSets/Main/trainval.txt', 'w')
+ftest = open('ImageSets/Main/test.txt', 'w')
+ftrain = open('ImageSets/Main/train.txt', 'w')
+fval = open('ImageSets/Main/val.txt', 'w')
+
+for i in list:
+    name = total_xml[i][:-4] + '\n'
+    if i in trainval:
+        ftrainval.write(name)
+        if i in train:
+            ftest.write(name)
+        else:
+            fval.write(name)
+    else:
+        ftrain.write(name)
+
+ftrainval.close()
+ftrain.close()
+fval.close()
+ftest.close()
